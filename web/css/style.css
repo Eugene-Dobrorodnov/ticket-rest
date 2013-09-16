@@ -1,0 +1,18 @@
+#left-bar
+{
+  float: left;
+  width: 175px;
+}
+
+#tasks-wrapper
+{
+  float: left;
+}
+
+#tasks-wrapper .task-box
+{
+  margin: 5px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #D0D0D0;
+}
