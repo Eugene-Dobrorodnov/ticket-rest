@@ -1,41 +1,32 @@
 <?php
-require_once 'web/layouts/head.php';
+require_once '../www/layouts/head.php';
 ?>
 
-<?php
-
-if($tasks)
-{?>
 <div id="tasks-wrapper">
-  <?php
+<?php
+if(isset($tasks) && $tasks)
+{
   foreach ($tasks as $task)
   { ?>
-  <div class="task-box" id="task-<?php echo $task['task_id']?>">
+  <div class="task-box" id="task-">
     <div class="task-head">
       <div class="task-title">
         <?php echo $task['title']; ?>
       </div>
       <div class="task-date">
-        <?php echo $task['creation_date']; ?>
+        <?php echo $task['created_date']; ?>
       </div>
     </div>
     <div class="task-body">
-      <?php echo $task['body']; ?>
+      <?php echo $task['content']; ?>
     </div>
   </div>
   <?php 
-  }?>
-</div>
-<?php  
+  } 
 }
-else
-{?>
-<h2>На данный момент нет заданий!</h2>
-
-<?php 
-} 
 ?>
+</div>  
 
 <?php
-require_once 'web/layouts/footer.php';
+require_once '../www/layouts/footer.php';
 ?>

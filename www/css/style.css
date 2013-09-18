@@ -1,7 +1,9 @@
-#left-bar
+#main-panel
 {
-  float: left;
-  width: 175px;
+  height: 130px;
+  width: 100%;
+  background: #4F5155;
+  display: block;
 }
 
 #tasks-wrapper
