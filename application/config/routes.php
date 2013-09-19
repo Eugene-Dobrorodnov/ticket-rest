@@ -1,8 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-$route['default_controller'] = "task/index/main";
-$route['create']             = 'task/index/create';
-$route['test']               = 'example/get_test';
+$route['default_controller'] = "tasks_api/tasks";
+$route['task']               = 'tasks_api/task';
 $route['404_override'] = '';
 
 
