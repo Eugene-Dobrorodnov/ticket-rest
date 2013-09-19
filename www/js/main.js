@@ -31,6 +31,7 @@ $( document ).ready(function() {
                 <div class="task-date">' + data.task.creation_date + '</div>\n\
               </div>\n\
               <div class="task-body">' + data.task.content + '</div>\n\
+              <a class="update-task-btn" href="#">Выполнить</a>\n\
               <a class="remove-task-btn" href="#">Удалить задачу</a>\n\
             </div>\n\
           ');
@@ -39,6 +40,36 @@ $( document ).ready(function() {
     });
 
     return false;
+  });
+
+  //Update Task
+  $('#tasks-wrapper').on('click', '.task-box a.update-task-btn', function(){
+    var task_id = $(this).parents('.task-box').attr('id');
+    
+    if(!task_id)
+    {
+      return false;
+    }
+    
+    $.ajax({
+      async: false,
+      type:"PUT",
+      url:"/task",
+      data:{
+        id : task_id
+        },
+      cache:false,
+      success:function(data){
+        var data = jQuery.parseJSON(data);
+        
+        if(data.error === 0)
+        {
+          $('#'+task_id).css('color','red');  
+        }
+        
+      }
+    });
+    
   });
 
   //Delete Task
@@ -60,7 +91,11 @@ $( document ).ready(function() {
       cache:false,
       success:function(data){
         var data = jQuery.parseJSON(data);
-        console.log(data);
+        
+        if(data.error === 0)
+        {
+          $('#'+task_id).remove();  
+        }
         
       }
     });

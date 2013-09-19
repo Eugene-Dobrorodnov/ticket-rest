@@ -20,6 +20,7 @@ if(isset($tasks) && $tasks)
     <div class="task-body">
       <?php echo $task['content']; ?>
     </div>
+    <a class="update-task-btn" href="#">Выполнить</a>
     <a class="remove-task-btn" href="#">Удалить задачу</a>
   </div>
   <?php 

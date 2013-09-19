@@ -52,7 +52,32 @@ class Tasks_api extends REST_Controller{
   
   public function task_put()
   {
-    print_r($this->_put_args);
+    $id = $this->put();
+    
+    //Monog delete
+    $dbhost = 'mongodb://localhost';
+    $dbname = 'db_tasks';
+    $m      = new Mongo($dbhost);
+    $db     = $m->$dbname;
+    $data   = array();
+
+    $collection = $db->tasks;
+    
+    try
+    {
+      new MongoId($id['id']);
+      $collection->update(
+        array('_id' => new MongoId($id['id'])),
+        array('$set' => array('status' => 2))
+      );
+      $data['error'] = 0; 
+    }
+    catch(Exception $e)
+    {
+      $data['error']  = 'ticket notfaund';
+    }
+    
+    echo json_encode($data);
   }
   
   public function task_delete()
@@ -64,10 +89,22 @@ class Tasks_api extends REST_Controller{
     $dbname = 'db_tasks';
     $m      = new Mongo($dbhost);
     $db     = $m->$dbname;
+    $data   = array();
 
     $collection = $db->tasks;
-    $collection->remove(array('_id' => $id['id']), array("justOne" => true));
-    echo json_encode($id);
+    
+    try
+    {
+      new MongoId($id['id']);
+      $collection->remove(array('_id' => new MongoId($id['id']) ));
+      $data['error'] = 0; 
+    }
+    catch(Exception $e)
+    {
+      $data['error']  = 'ticket notfaund';
+    }
+    
+    echo json_encode($data);
   }
   
 }
