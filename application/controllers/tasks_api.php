@@ -23,8 +23,9 @@ class Tasks_api extends REST_Controller{
 
     $arr = array();
 
-    foreach ($cursor as $document) {
-        $arr['tasks'][] = $document;
+    foreach ($cursor as $document) 
+    {
+      $arr['tasks'][] = $document;
     }
     $this->load->view('task-list', $arr);
   }
@@ -74,7 +75,7 @@ class Tasks_api extends REST_Controller{
     }
     catch(Exception $e)
     {
-      $data['error']  = 'ticket notfaund';
+      $data['error']  = 'ticket not faund';
     }
     
     echo json_encode($data);
@@ -101,7 +102,38 @@ class Tasks_api extends REST_Controller{
     }
     catch(Exception $e)
     {
-      $data['error']  = 'ticket notfaund';
+      $data['error']  = 'ticket not faund';
+    }
+    
+    echo json_encode($data);
+  }
+  
+  // тот самый метод
+  public function pullTasks_put()
+  {
+    $data = $this->put();
+    
+    //Monog pull tasks
+    $dbhost = 'mongodb://localhost';
+    $dbname = 'db_tasks';
+    $m      = new Mongo($dbhost);
+    $db     = $m->$dbname;
+    
+    $collection = $db->tasks;
+    $cursor = $collection->find(array(
+        'creation_date' => array('$gt' => $data['creation_date'])
+    ));
+    
+    if($cursor->count() > 0)
+    {
+      foreach ($cursor as $document) 
+      {
+        $data['tasks'][] = $document;
+      }
+    }
+    else
+    {
+      $data['tasks'] = false;
     }
     
     echo json_encode($data);
