@@ -2,7 +2,7 @@
 
 $route['default_controller'] = "tasks_api/tasks";
 $route['task']               = 'tasks_api/task';
-$route['pull-tasks']         = 'tasks_api/pullTasks';
+$route['sync-tasks']         = 'sync_api/tasks';
 $route['404_override'] = '';
 
 

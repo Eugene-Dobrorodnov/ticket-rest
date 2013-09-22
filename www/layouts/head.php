@@ -7,9 +7,18 @@
   </head>
   <body>
     <div id="main-panel">
-      <form id="task-form" method="post">
-        <input type="text" name="title"/>
-        <textarea name="content"></textarea>
-        <button id="save_btn">Сохранить</button>
-      </form>
+      <div id="form-box">  
+        <form id="task-form" method="post">
+          Заголовок:<br/>  
+          <input type="text" name="title"/><br/>
+          Описание задачи:<br/>
+          <textarea name="content"></textarea><br/>
+          <button id="save_btn">Сохранить</button>
+        </form>
+      </div>    
+      <div id="status-server">
+          <div id="server-ok">
+            Сервер работает
+          </div>
+      </div>  
     </div>

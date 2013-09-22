@@ -7,26 +7,15 @@ class Tasks_api extends REST_Controller{
   public function __construct()
   {
     parent::__construct();
-    $this->load->model('task/model_task');
+    $this->load->model('model_task');
   }
   
   public function tasks_get()
   {
-    $dbhost = 'mongodb://localhost';
-    $dbname = 'db_tasks';
-
-    $m  = new Mongo($dbhost);
-    $db = $m->$dbname;
-
-    $collection = $db->tasks;
-    $cursor = $collection->find()->sort(array('creation_date' => -1));
-
-    $arr = array();
-
-    foreach ($cursor as $document) 
-    {
-      $arr['tasks'][] = $document;
-    }
+    $arr          = array();  
+    $model        = new Model_Task();
+    $arr['tasks'] = $model->get_tasks();
+    
     $this->load->view('task-list', $arr);
   }
 
@@ -35,7 +24,7 @@ class Tasks_api extends REST_Controller{
     $data = array();
     $data['task']['title']         = $this->input->post('title', true);
     $data['task']['content']       = $this->input->post('content', true);
-    $data['task']['creation_date'] = date('y-m-d H:i:s');
+    $data['task']['creation_date'] = $this->input->post('creation_date', true);
     $data['task']['status']        = 1;
     $data['error']                 = 0;
     

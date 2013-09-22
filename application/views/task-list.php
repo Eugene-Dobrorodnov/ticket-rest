@@ -8,7 +8,7 @@ if(isset($tasks) && $tasks)
 {
   foreach ($tasks as $task)
   { ?>
-  <div class="task-box" id="<?php echo $task['_id']; ?>">
+  <div class="task-box <?=($task['status'] == 1) ? "task-active" : "task-complete" ?> " id="<?php echo $task['_id']; ?>">
     <div class="task-head">
       <div class="task-title">
         <?php echo $task['title']; ?>
@@ -20,7 +20,7 @@ if(isset($tasks) && $tasks)
     <div class="task-body">
       <?php echo $task['content']; ?>
     </div>
-    <a class="update-task-btn" href="#">Выполнить</a>
+    <?=($task['status'] == 1) ? '<a class="update-task-btn" href="#">Выполнить</a>' : '' ?>  
     <a class="remove-task-btn" href="#">Удалить задачу</a>
   </div>
   <?php 

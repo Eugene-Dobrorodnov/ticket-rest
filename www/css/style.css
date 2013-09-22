@@ -1,9 +1,53 @@
 #main-panel
 {
-  height: 130px;
+  height: 145px;
   width: 100%;
-  background: #4F5155;
+  background: #939393;
   display: block;
+  border-radius: 8px;
+}
+
+#form-box
+{
+    float: left;
+}
+
+#status-server
+{
+    float: right;
+    margin: 25px;
+}
+
+#server-ok
+{
+    padding: 15px;
+    background-color: #46b946;
+    color: #f3f3f3;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+#server-error
+{
+  padding: 15px;
+  background-color: red;
+  color: #f3f3f3;
+  font-weight: bold;
+  border-radius: 8px;  
+}
+
+#server-error a
+{
+  display: block;
+  width: 100px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #990000;
+  color: #f3f3f3;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
 }
 
 #tasks-wrapper
@@ -15,6 +59,15 @@
 {
   margin: 5px;
   padding: 10px;
-  border-radius: 8px;
-  background-color: #D0D0D0;
+  border-radius: 8px;  
+}
+
+.task-active
+{
+    background-color: #27709b;
+}
+
+.task-complete
+{
+    background-color: #D0D0D0;
 }
