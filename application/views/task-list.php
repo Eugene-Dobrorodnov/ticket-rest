@@ -13,6 +13,7 @@ if(isset($tasks) && $tasks)
       <div class="task-title">
         <?php echo $task['title']; ?>
       </div>
+      <a class="remove-task-btn" href="#">×</a>
       <div class="task-date">
         <?php echo $task['creation_date']; ?>
       </div>
@@ -20,8 +21,7 @@ if(isset($tasks) && $tasks)
     <div class="task-body">
       <?php echo $task['content']; ?>
     </div>
-    <?=($task['status'] == 1) ? '<a class="update-task-btn" href="#">Выполнить</a>' : '' ?>  
-    <a class="remove-task-btn" href="#">Удалить задачу</a>
+    <button class="update-task">Редактировать</button>
   </div>
   <?php 
   } 

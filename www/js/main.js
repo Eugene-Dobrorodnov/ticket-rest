@@ -63,7 +63,7 @@ function removeOnServer(){
     success:function(data){
       var data = jQuery.parseJSON(data);
       $.each(data.id, function(i, value){
-        //$('#'+value).remove(); 
+        $('#'+value).remove(); 
       });
     }
   });
@@ -84,11 +84,11 @@ function setLocalStaroge(val_title, val_content){
     <div title="'+val_title+'" class="task-box task-active">\n\
       <div class="task-head">\n\
         <div class="task-title">' + infoset.title + '</div>\n\
+        <a onclick="removeLocalStaroge(\''+val_title+'\');" href="#">×</a>\n\
         <div class="task-date">' + infoset.creation_date + '</div>\n\
       </div>\n\
       <div class="task-body">' + infoset.content + '</div>\n\
       <a href="#">Выполнить</a>\n\
-      <a onclick="removeLocalStaroge(\''+val_title+'\');" href="#">Удалить задачу</a>\n\
     </div>\n\
   ');
 }; 
@@ -166,11 +166,11 @@ function pullTasks(){
               <div id='+ data.tasks[i]._id.$id +' class="task-box task-active">\n\
               <div class="task-head">\n\
                 <div class="task-title">' + data.tasks[i].title + '</div>\n\
+                <a class="remove-task-btn" href="#">×</a>\n\
                 <div class="task-date">' + data.tasks[i].creation_date + '</div>\n\
               </div>\n\
               <div class="task-body">' + data.tasks[i].content + '</div>\n\
-              <a class="update-task-btn" href="#">Выполнить</a>\n\
-              <a class="remove-task-btn" href="#">Удалить задачу</a>\n\
+              <button class="update-task">Редактировать</button>\n\
               </div>\n\
             ');
           });
@@ -225,7 +225,7 @@ $(document).ready(function() {
     {
       return false;
     }
-        
+    
     $.ajax({
       async: false,
       type:"POST",
@@ -233,7 +233,8 @@ $(document).ready(function() {
       data:{
         title         : val_title,
         content       : val_content,
-        creation_date : myDate
+        creation_date : myDate,
+        status        : 1
       },
       cache:false,
       success:function(data){
@@ -244,11 +245,11 @@ $(document).ready(function() {
             <div id='+ data.task._id.$id +' class="task-box task-active">\n\
               <div class="task-head">\n\
                 <div class="task-title">' + data.task.title + '</div>\n\
+                <a class="remove-task-btn" href="#">×</a>\n\
                 <div class="task-date">' + data.task.creation_date + '</div>\n\
               </div>\n\
               <div class="task-body">' + data.task.content + '</div>\n\
-              <a class="update-task-btn" href="#">Выполнить</a>\n\
-              <a class="remove-task-btn" href="#">Удалить задачу</a>\n\
+              <button class="update-task">Редактировать</button>\n\
             </div>\n\
           ');
         }
@@ -260,12 +261,65 @@ $(document).ready(function() {
 
     return false;
   });
-
-  //Update Task
-  $('#tasks-wrapper').on('click', '.task-box a.update-task-btn', function(){
-    var task_id = $(this).parents('.task-box').attr('id');
+  
+  //Обертка для обновления
+  function hideForm(selector){
+    var title   = $.trim(selector.find('input[name="title"]').val());
+    var content = $.trim(selector.find('textarea[name="content"]').val());
     
-    if(!task_id)
+    selector.find('input[name="title"]').remove();
+    selector.find('textarea[name="content"]').remove();
+    selector.find('input[name="status"]').remove();
+    selector.find('button.save_changes').remove();
+
+    selector.find('.task-title').text(title);
+    selector.find('.task-body').text(content);
+
+    $(selector).find('button.update-task').html('Редактировать');
+  };
+  
+  function showForm(selector){
+    var title   = $.trim(selector.find('.task-title').text());
+    var content = $.trim(selector.find('.task-body').text());
+
+    selector.find('.task-body').html('');
+    selector.find('.task-title').wrapInner('<input name="title" value="' + title + '"/>');
+    selector.find('.task-body').wrapInner('<textarea name="content">' + content + '</textarea>');
+    $(selector).find('button.update-task').html('отменить');
+    selector.append('<button class="save_changes">Сохранить</button>');
+    selector.append('<input name="status" type="checkbox"/>')
+
+    if(selector.hasClass('task-complete'))
+    {
+      selector.find('input[name="status"]').attr('checked','checked');
+    }
+  }
+  
+  $('#tasks-wrapper').on('click', '.task-box button.update-task', function(){
+    
+    var box = $(this).parent('.task-box');
+    
+    if(
+       box.find('input[name="title"]').length > 0 &&
+       box.find('textarea[name="content"]').length > 0 
+      )
+    {
+      hideForm(box);
+    }
+    else
+    {
+      showForm(box);
+    }
+  });
+  
+  //Update Task
+  $('#tasks-wrapper').on('click', '.task-box button.save_changes', function(){
+    var task_id      = $(this).parents('.task-box').attr('id');
+    var task_status  = $(this).parents('.task-box').find('input[name="status"]').is(':checked') ? 2 : 1;
+    var task_title   = $.trim($(this).parents('.task-box').find('input[name="title"]').val());
+    var task_content = $.trim($(this).parents('.task-box').find('textarea[name="content"]').val());
+    
+    if(!task_id || !task_title || !task_content || task_content == '')
     {
       return false;
     }
@@ -275,16 +329,35 @@ $(document).ready(function() {
       type:"PUT",
       url:"/task",
       data:{
-        id : task_id
+        id      : task_id,
+        title   : task_title,
+        content : task_content,
+        status  : task_status
         },
       cache:false,
       success:function(data){
         var data = jQuery.parseJSON(data);
-        
-        if(data.error === 0)
-        {
-          $('#'+task_id).css('color','red');  
-        }
+        $.each(data, function(i, value){
+          if(data[i].error === 0)
+          {
+            switch (task_status) {
+              case 2:
+                $('#'+task_id).removeClass('task-active');
+                $('#'+task_id).addClass('task-complete');
+                break;
+                
+              case 1:
+                $('#'+task_id).removeClass('task-complete');
+                $('#'+task_id).addClass('task-active');
+                break;
+            }
+            
+            $('#'+task_id).find('task-title').html(task_title);
+            $('#'+task_id).find('task-body').html(task_content);
+            
+            hideForm($('#'+task_id));
+          }
+        });
       }
     });
   });

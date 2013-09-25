@@ -73,19 +73,39 @@ class Model_Task extends CI_Model {
     $db     = $mongo->db_tasks;
     $coll   = $db->tasks;
     
-    try
+    foreach ($id as $task)
     {
-      new MongoId($id);
-      $coll->update(
-        array('_id' => new MongoId($id)),
-        array('$set' => array('status' => 2))
-      );
-      $data['error'] = 0; 
-    }
-    catch(Exception $e)
-    {
-      $data['error']  = 'ticket not faund';
-    }
+      try
+      {
+        $coll->update(
+          array('_id' => new MongoId($task['id'])),
+          array('$set' => array(
+            'title'   => $task['title'],
+            'content' => $task['content'],
+            'status'  => $task['status']  
+          ))
+        );
+        $data[$task['id']]['error'] = 0;
+      }
+      catch (Exception $e)
+      {
+        $data[$task['id']]['error'] = 1;
+      }
+    }  
+    
+//    try
+//    {
+//      new MongoId($id);
+//      $coll->update(
+//        array('_id' => new MongoId($id)),
+//        array('$set' => array('status' => 2))
+//      );
+//      $data['error'] = 0; 
+//    }
+//    catch(Exception $e)
+//    {
+//      $data['error']  = 'ticket not faund';
+//    }
     
     return $data;
   }
