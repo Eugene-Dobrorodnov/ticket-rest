@@ -12,12 +12,20 @@ class Tasks_api extends REST_Controller{
     $this->load->model('model_task');
   }
   
-  public function tasks_get()
+  public function task_get()
   {
-    $arr          = array();  
-    $model        = new Model_Task();
-    $arr['tasks'] = $model->get_tasks();
-    $this->load->view('task-list', $arr);
+    $arr = array();
+    $get = $this->get();
+    $arr = $this->model_task->get_tasks($get);
+    
+    if(empty($get))
+    {
+      $this->load->view('task-list', $arr);   
+    }
+    else
+    {
+        $this->result = json_encode($arr);
+    }
   }
 
   public function task_post()

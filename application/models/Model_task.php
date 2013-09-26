@@ -15,15 +15,33 @@ class Model_Task extends CI_Model {
     $this->db_coll = $dn->tasks;
   }
     
-  public function get_tasks()
+  public function get_tasks($get)
   {
     $arr    = array();
-    $cursor = $this->db_coll->find()->sort(array('creation_date' => -1));
-
-    foreach ($cursor as $document) 
+    
+    if(empty($get))
     {
-      $arr[] = $document;
+      $cursor = $this->db_coll->find()->sort(array('creation_date' => -1));
     }
+    else
+    {
+      $cursor = $this->db_coll->find(array(
+        'creation_date' => array('$gt' => $get['creation_date'])
+      ));
+    }
+    
+    if($cursor->count() > 0)
+    {
+      foreach ($cursor as $document) 
+      {
+        $arr['tasks'][] = $document;
+      }
+    }
+    else
+    {
+      $arr['tasks'] = false;
+    }
+    
     return $arr;
   }
   

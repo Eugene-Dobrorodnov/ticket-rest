@@ -135,6 +135,7 @@ function updateLocalStaroge(id, title, content, status){
       localStorage.setItem('create_' + title, JSON.stringify(tmp));
       
       $('div.task-box[title="'+ id +'"]').attr('title', title);
+      $('div.task-box[title="'+ title +'"]').find('div.task-head a').attr('onclick','removeLocalStaroge(\''+title+'\')');
       
       switch (status) {
         case 2:
@@ -291,15 +292,16 @@ function pullTasks(){
   
   $.ajax({
     async: false,
-    type:"PUT",
-    url:"/sync-tasks",
+    type:"GET",
+    url:"/task",
     data:{
       creation_date : last_ticket
     },
     cache:false,
+    response:'json',
     success:function(data){
-      var data = jQuery.parseJSON(data);
-        
+     var data = jQuery.parseJSON(data);
+        console.log(data);
       if(data.tasks)
         {
           $.each(data.tasks, function(i, value){
@@ -386,7 +388,21 @@ $(document).ready(function() {
       cache:false,
       success:function(data){
         var data = jQuery.parseJSON(data);
-        console.log(data.tasks);
+        
+        $.each(data.tasks, function(i, value){
+          $('#tasks-wrapper').prepend('\n\
+            <div id='+ data.tasks[i]._id.$id +' class="task-box task-active">\n\
+            <div class="task-head">\n\
+              <div class="task-title">' + data.tasks[i].title + '</div>\n\
+              <a class="remove-task-btn" href="#">×</a>\n\
+              <div class="task-date">' + data.tasks[i].creation_date + '</div>\n\
+            </div>\n\
+            <div class="task-body">' + data.tasks[i].content + '</div>\n\
+            <button class="update-task">Редактировать</button>\n\
+            </div>\n\
+          ');
+        });
+        
       },
       error: function(){
         setLocalStaroge(val_title, val_content);
