@@ -9,17 +9,16 @@ class Model_Task extends CI_Model {
   {
     parent::__construct();
     
-    $this->_db = new Mongo($this->_dbhost);
+    $db = new Mongo($this->_dbhost);
+    $dn = $db->db_tasks; 
+    
+    $this->db_coll = $dn->tasks;
   }
     
   public function get_tasks()
   {
     $arr    = array();
-    
-    $mongo  = $this->_db;
-    $db     = $mongo->db_tasks;
-    $coll   = $db->tasks;
-    $cursor = $coll->find()->sort(array('creation_date' => -1));
+    $cursor = $this->db_coll->find()->sort(array('creation_date' => -1));
 
     foreach ($cursor as $document) 
     {
@@ -28,56 +27,43 @@ class Model_Task extends CI_Model {
     return $arr;
   }
   
-  public function insert_tasks()
-  {
-    $data = array();
-    $data['task']['title']         = $this->input->post('title', true);
-    $data['task']['content']       = $this->input->post('content', true);
-    $data['task']['creation_date'] = $this->input->post('creation_date', true);
-    $data['task']['status']        = 1;
-    $data['error']                 = 0;
-    
-    $mongo  = $this->_db;
-    $db     = $mongo->db_tasks;
-    $coll   = $db->tasks;
-    
-    $coll->insert($data['task'], array("safe" => 1));
-    return $data;
+  public function insert_tasks(array $tasks)
+  {    
+    $this->db_coll->batchInsert($tasks['tasks']);
+    return $tasks;
   }
   
   public function delete_tasks($id)
   {
     $data   = array();
-    $mongo  = $this->_db;
-    $db     = $mongo->db_tasks;
-    $coll   = $db->tasks;
     
-    try
+    foreach ($id['tasks_id'] as $val)
     {
-      new MongoId($id);
-      $coll->remove(array('_id' => new MongoId($id) ));
-      $data['error'] = 0; 
-    }
-    catch(Exception $e)
-    {
-      $data['error']  = 'ticket not faund';
+      try
+      {
+        new MongoId($val['id']);
+        $this->db_coll->remove(array('_id' => new MongoId($val['id']) ));
+        $data['error'][] = 0; 
+        $data['id'][]    = $val['id'];
+      }
+      catch(Exception $e)
+      {
+        $data['error'][]  = $val['id'];
+      }  
     }
     
     return $data;
   }
   
-  public function update_tasks($id)
+  public function update_tasks($tasks)
   {
     $data   = array();
-    $mongo  = $this->_db;
-    $db     = $mongo->db_tasks;
-    $coll   = $db->tasks;
     
-    foreach ($id as $task)
+    foreach ($tasks['tasks'] as $task)
     {
       try
       {
-        $coll->update(
+        $this->db_coll->update(
           array('_id' => new MongoId($task['id'])),
           array('$set' => array(
             'title'   => $task['title'],
@@ -92,20 +78,6 @@ class Model_Task extends CI_Model {
         $data[$task['id']]['error'] = 1;
       }
     }  
-    
-//    try
-//    {
-//      new MongoId($id);
-//      $coll->update(
-//        array('_id' => new MongoId($id)),
-//        array('$set' => array('status' => 2))
-//      );
-//      $data['error'] = 0; 
-//    }
-//    catch(Exception $e)
-//    {
-//      $data['error']  = 'ticket not faund';
-//    }
     
     return $data;
   }

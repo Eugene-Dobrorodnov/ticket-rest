@@ -23,21 +23,21 @@ class Tasks_api extends REST_Controller{
   public function task_post()
   {
     $tasks = $this->post();
-    $data  = $this->model_task->insert_tasks();
+    $data  = $this->model_task->insert_tasks($tasks);
     $this->result = json_encode($data);
   }
   
   public function task_put()
   {
-    $id[]  = $this->put();
-    $data  = $this->model_task->update_tasks($id);   
+    $tasks = $this->put();
+    $data  = $this->model_task->update_tasks($tasks);   
     $this->result = json_encode($data);
   }
   
   public function task_delete()
   {
     $id    = $this->delete();
-    $data  = $this->model_task->delete_tasks($id['id']);
+    $data  = $this->model_task->delete_tasks($id);
     
     $this->result = json_encode($data);
   }

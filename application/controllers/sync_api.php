@@ -10,23 +10,6 @@ class Sync_api extends REST_Controller{
     $this->load->model('model_task');
   }
   
-  public function tasks_post()
-  {
-    $data   = $this->post();
-    //Monog insert
-    $dbhost = 'mongodb://localhost';
-    $dbname = 'db_tasks';
-    $m      = new Mongo($dbhost);
-    $db     = $m->$dbname;
-
-    $collection = $db->tasks;
-    
-    foreach ($data['tasks'] as $val)
-    {
-        $collection->insert($val, array("safe" => 1));
-    }
-    
-  }
   
   public function tasks_put()
   {
@@ -58,36 +41,6 @@ class Sync_api extends REST_Controller{
     echo json_encode($data);
   }
   
-  public function tasks_delete()
-  {
-    $id = $this->delete();
-    
-    //Monog delete
-    $dbhost = 'mongodb://localhost';
-    $dbname = 'db_tasks';
-    $m      = new Mongo($dbhost);
-    $db     = $m->$dbname;
-    $data   = array();
-
-    $collection = $db->tasks;
-    
-    foreach ($id['tasks_id'] as $val)
-    {
-      try
-      {
-        new MongoId($val['id']);
-        $collection->remove(array('_id' => new MongoId($val['id']) ));
-        $data['error'][] = 0; 
-        $data['id'][]    = $val['id'];
-      }
-      catch(Exception $e)
-      {
-        $data['error'][]  = $val['id'];
-      }  
-    }
-    
-    echo json_encode($data);
-  }
 }
 
 ?>
