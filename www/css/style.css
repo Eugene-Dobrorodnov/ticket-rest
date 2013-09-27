@@ -74,7 +74,7 @@ body
   float: left;
 }
 
-.task-box a.remove-task-btn
+.task-box .task-head a
 {
   display: block;
   float: right;
@@ -88,7 +88,7 @@ body
   background: transparent url('../img/delete.png') 0 0 no-repeat scroll;
 }
 
-.task-box a.remove-task-btn:hover
+.task-box .task-head a:hover
 {
   color: darksalmon;
 }

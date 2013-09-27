@@ -41,13 +41,13 @@ function getDate(){
 
 // Удаляем задачи, которые были созданы локально
 function removeLocalStaroge(id){
-  console.log('delete');
   for(var i in window.localStorage)
   {
-    if(i != 'create_'+id)
+    if(i == 'create_'+id)
     {  
       localStorage.removeItem('create_'+id);
       console.log($('#tasks-wrapper div.task-box[title="'+id+'"]'));
+      console.log('delete '+id);
       $('#tasks-wrapper div.task-box[title="'+id+'"]').remove();
     }
   }
@@ -220,6 +220,8 @@ function setLocalStaroge(val_title, val_content){
       <button class="update-task">Редактировать</button>\n\
     </div>\n\
   ');
+  $('form#task-form input[name="title"]').val('');
+  $('form#task-form textarea[name="content"]').val('');
 }; 
 
 /*
@@ -245,7 +247,7 @@ function createOnServer(){
       dump.push(JSON.parse(localStorage.getItem(i)));
     }
   }
-  
+  console.log(dump);
   if(dump.length == 0)
   {
     return false;
@@ -261,7 +263,7 @@ function createOnServer(){
     cache:false,
     success:function(data){
       var data = jQuery.parseJSON(data);
-      console.log(data.tasks);
+      console.log(data);
       $.each(data.tasks, function(i, value){
         //Меняем title на id, убераем onclick
         var box = $('div.task-box[title="'+ data.tasks[i].title +'"]');
@@ -289,7 +291,7 @@ function pullTasks(){
   {
     return false;
   }
-  
+  console.log(last_ticket);
   $.ajax({
     async: false,
     type:"GET",
@@ -300,8 +302,8 @@ function pullTasks(){
     cache:false,
     response:'json',
     success:function(data){
-     var data = jQuery.parseJSON(data);
-        console.log(data);
+      var data = jQuery.parseJSON(data);
+      console.log(data);
       if(data.tasks)
         {
           $.each(data.tasks, function(i, value){
@@ -329,17 +331,11 @@ function pullTasks(){
           ');
         }
         
-        createOnServer();
         updateOnServer();
         removeOnServer();
+        createOnServer();
         window.localStorage.clear();
-        /*
-         * если сервер ответил, то каждые 5 секунд будем обращаться к нему,
-         * а вдруг там что-то новенькое...
-         */
-        setTimeout(function() {
-          pullTasks();
-        }, 5000);
+        
       },
     error: function(){
       if($('#server-ok').length > 0 && $('#server-error').length == 0 )
@@ -347,8 +343,7 @@ function pullTasks(){
          $('#server-ok').remove();
          $('#status-server').append('\
           <div id="server-error">\n\
-            На данный момент сервер неотвечает\n\
-            <a href="#" onclick="pullTasks();">Обновить</a>\n\
+            Сервер не доступен!\n\
           </div>\n\
         ');
       }
@@ -356,9 +351,18 @@ function pullTasks(){
   });
 };
 
-pullTasks();
+
 
 $(document).ready(function() {
+  
+  /*
+  * если сервер ответил, то каждые 5 секунд будем обращаться к нему,
+  * а вдруг там что-то новенькое...
+  */
+  setInterval(function() {
+   pullTasks();
+  }, 5000);
+  
   // Create Task
   $('form#task-form button#save_btn').click(function(){
     var val_title   = $('form#task-form input[name="title"]').val();
@@ -402,7 +406,8 @@ $(document).ready(function() {
             </div>\n\
           ');
         });
-        
+        $('form#task-form input[name="title"]').val('');
+        $('form#task-form textarea[name="content"]').val('');
       },
       error: function(){
         setLocalStaroge(val_title, val_content);

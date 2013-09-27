@@ -9,10 +9,16 @@ class Model_Task extends CI_Model {
   {
     parent::__construct();
     
-    $db = new Mongo($this->_dbhost);
-    $dn = $db->db_tasks; 
+    try{
+      $db = new Mongo($this->_dbhost);
+      $dn = $db->db_tasks; 
     
-    $this->db_coll = $dn->tasks;
+      $this->db_coll = $dn->tasks;
+    }
+    catch (Exception $e)
+    {
+      return array('error'=>$e);
+    }
   }
     
   public function get_tasks($get)
