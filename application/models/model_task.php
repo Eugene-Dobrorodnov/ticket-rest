@@ -1,19 +1,21 @@
 <?php
 
 class Model_Task extends CI_Model {
-  
-  private $_dbhost = 'mongodb://localhost'; 
-  private $_db;
     
   function __construct()
   {
     parent::__construct();
     
-    try{
-      $db = new Mongo($this->_dbhost);
-      $dn = $db->db_tasks; 
+    try
+    {
+      $host       = 'mongodb://localhost';
+      $dbname     = 'db_tasks';
+      $collection = 'tasks';
+      
+      $db = new Mongo($host);
+      $dn = $db->$dbname; 
     
-      $this->db_coll = $dn->tasks;
+      $this->db_coll = $dn->$collection;
     }
     catch (Exception $e)
     {
